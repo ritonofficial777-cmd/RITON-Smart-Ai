@@ -1,6 +1,15 @@
 import os
+import threading
+from flask import Flask
 import telebot
 from google import genai
+
+# ওয়েব সার্ভার (Render Free Tier-এর জন্য)
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Bot is running perfectly!"
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 GEMINI_KEY = os.environ.get("GEMINI_KEY")
@@ -19,4 +28,12 @@ def reply(message):
     except Exception as e:
         bot.reply_to(message, "দুঃখিত, কোনো সমস্যা হয়েছে।")
 
-bot.infinity_polling()
+def run_bot():
+    bot.infinity_polling()
+
+if __name__ == "__main__":
+    # টেলিগ্রাম বট ব্যাকগ্রাউন্ড থ্রেডে চলবে
+    threading.Thread(target=run_bot).start()
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host="0.0.0.0", port=port)
+    
