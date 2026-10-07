@@ -4,12 +4,12 @@ from flask import Flask
 import telebot
 from google import genai
 
-# ওয়েব সার্ভার (Render Free Tier-এর জন্য)
+# Flask সার্ভিস (Render Free Tier-এর জন্য)
 app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return "Bot is running perfectly!"
+    return 'Bot is running perfectly!'
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 GEMINI_KEY = os.environ.get("GEMINI_KEY")
@@ -21,11 +21,12 @@ client = genai.Client(api_key=GEMINI_KEY)
 def reply(message):
     try:
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-2.0-flash",
             contents=message.text
         )
         bot.reply_to(message, response.text)
     except Exception as e:
+        print(f"Gemini API Error: {e}")
         bot.reply_to(message, "দুঃখিত, কোনো সমস্যা হয়েছে।")
 
 def run_bot():
@@ -36,4 +37,5 @@ if __name__ == "__main__":
     threading.Thread(target=run_bot).start()
     port = int(os.environ.get("PORT", 8080))
     app.run(host="0.0.0.0", port=port)
+    
     
