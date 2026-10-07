@@ -20,8 +20,7 @@ client = genai.Client(api_key=GEMINI_KEY)
 def reply(message):
     try:
         response = client.models.generate_content(
-            model="model="gemini-3.8-flash",
-
+            model="gemini-2.5-flash",
             contents=message.text
         )
         bot.reply_to(message, response.text)
