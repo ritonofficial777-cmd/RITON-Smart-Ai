@@ -1,4 +1,5 @@
 import os
+import time
 import threading
 from flask import Flask
 import telebot
@@ -29,7 +30,17 @@ def reply(message):
         bot.reply_to(message, f"ত্রুটি: {e}")
 
 def run_bot():
-    bot.infinity_polling(skip_pending=True)
+    time.sleep(3)
+    try:
+        bot.remove_webhook()
+    except Exception:
+        pass
+    while True:
+        try:
+            bot.polling(none_stop=True, interval=1, timeout=20)
+        except Exception as e:
+            print(f"Polling conflict: {e}")
+            time.sleep(5)
 
 if __name__ == "__main__":
     threading.Thread(target=run_bot, daemon=True).start()
