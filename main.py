@@ -4,7 +4,6 @@ from flask import Flask
 import telebot
 from google import genai
 
-# Flask সার্ভিস (Render Free Tier-এর জন্য)
 app = Flask(__name__)
 
 @app.route('/')
@@ -26,16 +25,14 @@ def reply(message):
         )
         bot.reply_to(message, response.text)
     except Exception as e:
-        print(f"Gemini API Error: {e}")
-        bot.reply_to(message, "দুঃখিত, কোনো সমস্যা হয়েছে।")
+        print(f"API_ERROR_DETAILS: {e}")
+        bot.reply_to(message, f"ত্রুটি: {e}")
 
 def run_bot():
-    bot.infinity_polling()
+    bot.infinity_polling(skip_pending=True)
 
 if __name__ == "__main__":
-    # টেলিগ্রাম বট ব্যাকগ্রাউন্ড থ্রেডে চলবে
-    threading.Thread(target=run_bot).start()
+    threading.Thread(target=run_bot, daemon=True).start()
     port = int(os.environ.get("PORT", 8080))
     app.run(host="0.0.0.0", port=port)
-    
     
