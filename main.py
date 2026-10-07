@@ -16,25 +16,17 @@ GEMINI_KEY = os.environ.get("GEMINI_KEY")
 bot = telebot.TeleBot(BOT_TOKEN)
 client = genai.Client(api_key=GEMINI_KEY)
 
-@bot.message_handler(commands=['models'])
-def show_models(message):
-    try:
-        models = [m.name for m in client.models.list()]
-        reply_text = "আপনার উপলব্ধ মডেল তালিকা:\n" + "\n".join(models[:15])
-        bot.reply_to(message, reply_text)
-    except Exception as e:
-        bot.reply_to(message, f"লিস্ট আনতে সমস্যা: {e}")
-
 @bot.message_handler(func=lambda message: True)
 def reply(message):
     try:
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-flash-latest",
             contents=message.text
         )
         bot.reply_to(message, response.text)
     except Exception as e:
-        bot.reply_to(message, f"ত্রুটি: {e}\n\nউপলব্ধ মডেল দেখতে /models লিখে পাঠান।")
+        print(f"API_ERROR_DETAILS: {e}")
+        bot.reply_to(message, f"ত্রুটি: {e}")
 
 def run_bot():
     bot.infinity_polling(skip_pending=True)
